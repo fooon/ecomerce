@@ -2,12 +2,14 @@ import { type FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { Badge, Button, Row, Col, Space, message, Typography, Input, Dropdown, Modal, Layout } from "antd";
-import { getCartGoods, getGoods, getIsAuth, getUserLogin } from "src/store";
+import { getCartGoods, getGoods, getIsAuth, getUserLogin, getCartGoodsCount } from "src/store";
 import { useSelector } from "react-redux";
 import { userActions, cartActions, goodActions } from "src/store";
 import { useAppDispatch } from "src/hooks/useAppDispatch";
 import type { Good } from "src/types/general";
 import { debounce } from "lodash";
+import { api } from "src/api/api";
+
 import css from "./header.module.css";
 
 export const Header: FC = () => {
@@ -18,6 +20,7 @@ export const Header: FC = () => {
     const [searchedGoods, setSearchedGoods] = useState<Good[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const goods = useSelector(getGoods);
+    const totalCount = useSelector(getCartGoodsCount);
 
     useEffect(() => {
         if (!isAuth && login) {
@@ -25,19 +28,18 @@ export const Header: FC = () => {
         }
     }, [isAuth]);
 
-    useEffect(() => {
-        setSearchedGoods(goods);
-    }, [goods]);
-
     const items = searchedGoods.length > 0 ? searchedGoods.map((good) => ({
         key: good.id,
         label: <Link to={`/product/${good.id}`}>{good.label}</Link>
     })) : [{ key: "noResults", label: "Ничего не найдено, попробуйте изменить запрос" }]
 
-    const searchHandle = debounce((value: string) => {
+    const searchHandle = debounce(async (value: string) => {
         if (value.trim().length > 0) {
-            dispatch(goodActions.serverRequest({ text: value }))
-        } else setSearchedGoods([])
+            const { items = [] } = await api.getGoods({ text: value });
+            setSearchedGoods(items);
+        } else {
+            setSearchedGoods([])
+        }
     }, 1_500)
 
     const showModal = () => {
@@ -93,9 +95,7 @@ export const Header: FC = () => {
                             message.open({ type: "error", content: "Только для зарегистрированных пользователей" });
                         }
                     }} to="/cart">
-                        <Badge count={cartGoods.map(good => good.count).reduce((acc, curr) => {
-                            return acc + curr;
-                        }, 0)}>
+                        <Badge count={totalCount}>
                             <ShoppingCartOutlined className={css.cartIcon} /></Badge>
                     </Link>
                 </Col>

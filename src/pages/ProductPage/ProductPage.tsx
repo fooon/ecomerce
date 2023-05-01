@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { Content } from "antd/es/layout/layout";
+import { Spinner } from 'src/components';
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { Spin, Skeleton, Button, message } from "antd";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -55,7 +56,8 @@ export const ProductPage: FC = () => {
                 <Skeleton.Node className={css.imgPlug} active={true}>
                     <img className={css.productImg} src="https://source.unsplash.com/featured/400x600?product" alt="product image" />
                 </Skeleton.Node>
-                {loadStatus === "LOADING" ? <div className="loading"><Spin tip="Загрузка" size="large"></Spin></div> :
+                {loadStatus === "LOADING" ?
+                    <Spinner tip="Загрузка" size="large" /> :
                     <div className="info">
                         <h3>{currentGoods?.label}</h3>
                         <p>{currentGoods?.description}</p>
@@ -63,7 +65,6 @@ export const ProductPage: FC = () => {
                         <Button onClick={() => {
                             if (isAuth) {
                                 addToCarts();
-                                setCount(1);
                                 message.open({
                                     type: "success",
                                     content: "Продукт добавлен в корзину"

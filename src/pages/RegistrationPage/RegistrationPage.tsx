@@ -80,7 +80,6 @@ export const RegistrationPage: FC = () => {
                             <Switch defaultChecked={values.isSubscribe} onChange={(value) => setFieldValue("isSubscribe", value)} />
                         </Form.Item>
                         <Form.Item className={css.fromContol}>
-                            {isAuth && <Navigate to="/" />}
                             <Button className={css.registrationBtn} type="primary" htmlType="submit" onClick={() => {
                                 if (!isValid) {
                                     message.open({

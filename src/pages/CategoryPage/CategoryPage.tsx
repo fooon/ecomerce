@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Content } from "antd/es/layout/layout";
 import { Spin } from "antd";
 import { useParams } from "react-router";
+import { Spinner } from 'src/components';
 import { getGoods, getGoodsLoadStatus, goodActions } from "src/store";
 import { useAppDispatch } from "src/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
@@ -29,7 +30,7 @@ export const CategoryPage: FC = () => {
 
     return (
         <Content className="content">
-            {loadStatus === "LOADING" ? <div className="loading"><Spin tip="Загрузка"></Spin></div> : <GoodCategory label={findCategory()?.label!} goods={goods} />}
+            {loadStatus === "LOADING" ? <Spinner tip="Загрузка" /> : <GoodCategory label={findCategory()?.label!} goods={goods} />}
         </Content>
     )
 }
